@@ -1,0 +1,436 @@
+openapi: 3.0.1
+info:
+  title: User Management API
+  version: 1.0.0
+  description: API for managing users with CRUD operations.
+servers:
+  - url: http://localhost:8080
+paths:
+  /api/v1/users:
+    get:
+      summary: Get all users
+      tags: [User]
+      operationId: getAllUser
+      responses:
+        "200":
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserResponse"
+    post:
+      summary: Create a user
+      tags: [User]
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRequest"
+      responses:
+        "200":
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+  /api/v1/users/{id}:
+    get:
+      summary: Get user by ID
+      tags: [User]
+      operationId: getUserById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "404":
+          description: User not found
+    put:
+      summary: Update user
+      tags: [User]
+      operationId: updateUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRequest"
+      responses:
+        "200":
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+    delete:
+      summary: Delete user
+      tags: [User]
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: User deleted
+
+  /api/v1/loans/apply:
+    post:
+      summary: Apply for a loan
+      tags: [ Loan ]
+      operationId: applyLoan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoanRequest"
+      responses:
+        "200":
+          description: Loan successfully applied
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoanResponse"
+        "404":
+          description: User not found
+  /api/v1/loans/user/{userId}:
+    get:
+      summary: Get loans by user
+      tags: [ Loan ]
+      operationId: getLoansByUserId
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: long
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+            minimum: 0
+          description: Zero-based page index
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 20
+            minimum: 1
+            maximum: 100
+          description: Page size (max 100)
+      responses:
+        "200":
+          description: List of loans for the user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LoanResponse"
+        "404":
+          description: User not found
+
+  /api/v1/backoffice:
+    get:
+      summary: Get all backoffice records
+      tags: [ BackOfficeOperation ]
+      operationId: getAllBackOfficeLoans
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+            minimum: 0
+          description: Zero-based page index
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 20
+            minimum: 1
+            maximum: 100
+          description: Page size (max 100)
+      responses:
+        "200":
+          description: List of backoffice records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BackofficeResponse"
+        "404":
+          description: User not found
+
+    post:
+      summary: Create a new backoffice record
+      tags: [ BackOfficeOperation ]
+      operationId: createBackOffice
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BackofficeRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BackofficeResponse"
+        "404":
+          description: User not found
+  /api/v1/backoffice/user/{id}:
+    get:
+      summary: Get backoffice record by userID
+      tags: [ BackOfficeOperation ]
+      operationId: getBackOfficeByUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Backoffice record found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BackofficeResponse"
+        "404":
+          description: Not found
+
+    put:
+      summary: Update backoffice record
+      tags: [ BackOfficeOperation ]
+      operationId: updateBackOffice
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BackofficeRequest"
+      responses:
+        "200":
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BackofficeResponse"
+        "404":
+          description: Not found
+
+  /api/v1/external-call:
+    get:
+      summary: Call an external API
+      tags: [ External ]
+      operationId: callExternalApi
+      parameters:
+        - name: url
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "https://www.google.com"
+          description: The external URL to call
+      responses:
+        "200":
+          description: Response from external API
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExternalApiResponse"
+        "400":
+          description: Invalid URL
+        "500":
+          description: Error calling external API
+
+components:
+  schemas:
+    UserRequest:
+      type: object
+      required: [name, email]
+      properties:
+        name:
+          type: string
+          example: John Doe
+        email:
+          type: string
+          format: email
+          example: john.doe@example.com
+        phone:
+          type: string
+          example: +60123456789
+        address:
+          type: string
+          example: Jalan 1, 10000, selangor, malaysia
+
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: John Doe
+        email:
+          type: string
+          example: john.doe@example.com
+        phone:
+          type: string
+          example: +60123456789
+        address:
+          type: string
+          example: Jalan 1, 10000, selangor, malaysia
+
+    LoanRequest:
+      type: object
+      required: [ userId, amount, interestRate, endDate, loanType ]
+      properties:
+        userId:
+          type: long
+          example: 1
+        amount:
+          type: number
+          format: double
+          example: 5000.0
+        interestRate:
+          type: number
+          format: double
+          example: 7.5
+        endDate:
+          type: string
+          format: date
+          example: 2026-12-31
+        loanType:
+          type: string
+          example: Home Loan
+
+    LoanResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 10
+        loanType:
+          type: string
+          example: Home Loan
+        userId:
+          type: long
+          example: 1
+        amount:
+          type: number
+          format: double
+          example: 5000.0
+        interestRate:
+          type: number
+          format: double
+          example: 7.5
+        payableLoanAmount:
+          type: number
+          format: double
+          example: 5000.0
+        startDate:
+          type: string
+          format: date
+          example: 2025-12-06
+        endDate:
+          type: string
+          format: date
+          example: 2026-12-31
+        loanApproval:
+          type: string
+          enum:
+            - PENDING
+            - APPROVED
+            - REJECTED
+        user:
+          $ref: "#/components/schemas/UserResponse"
+
+
+    BackofficeResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        appliedDate:
+          type: string
+          format: date
+        loanDetails:
+          $ref: "#/components/schemas/LoanResponse"
+
+    BackofficeRequest:
+      type: object
+      required:
+        - userId
+        - loanId
+        - appliedDate
+      properties:
+        userId:
+          type: integer
+        loanId:
+          type: integer
+        appliedDate:
+          type: string
+          format: date
+        loanApproval:
+          type: string
+
+    ExternalApiResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          example: 200
+          description: HTTP status code from external API
+        responseBody:
+          type: string
+          description: Response body from external API (as text)
+        url:
+          type: string
+          example: "https://www.google.com"
+          description: The URL that was called
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of the call
