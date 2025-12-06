@@ -11,8 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ExternalApiController implements ExternalApi {
 
-    @Autowired
-    private ExternalApiService externalApiService;
+    private final ExternalApiService externalApiService;
+
+    public ExternalApiController(ExternalApiService externalApiService) {
+        this.externalApiService = externalApiService;
+    }
 
     @Override
     public ResponseEntity<ExternalApiResponse> callExternalApi(String url) {

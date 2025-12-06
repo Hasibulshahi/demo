@@ -13,8 +13,11 @@ import java.util.Map;
 @RestController
 public class LoanController implements LoanApi {
 
-    @Autowired
-    private LoanService loanService;
+    private final LoanService loanService;
+
+    public LoanController(LoanService loanService) {
+        this.loanService = loanService;
+    }
 
     @Override
     public ResponseEntity<LoanResponse> applyLoan(LoanRequest request) {

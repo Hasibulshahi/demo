@@ -20,20 +20,27 @@ import java.util.List;
 @Service
 public class BackOfficeServiceImpl implements BackOfficeService {
 
-    @Autowired
-    private BackOfficeRepository backOfficeRepository;
+        private final BackOfficeRepository backOfficeRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+        private final UserRepository userRepository;
 
-    @Autowired
-    private LoanRepository loanRepository;
+        private final LoanRepository loanRepository;
 
-    @Autowired
-    private BackOfficeMapper backOfficeMapper;
+        private final BackOfficeMapper backOfficeMapper;
 
-    @Autowired
-    private LoanService loanService;
+        private final LoanService loanService;
+
+        public BackOfficeServiceImpl(BackOfficeRepository backOfficeRepository,
+                                                                 UserRepository userRepository,
+                                                                 LoanRepository loanRepository,
+                                                                 BackOfficeMapper backOfficeMapper,
+                                                                 LoanService loanService) {
+                this.backOfficeRepository = backOfficeRepository;
+                this.userRepository = userRepository;
+                this.loanRepository = loanRepository;
+                this.backOfficeMapper = backOfficeMapper;
+                this.loanService = loanService;
+        }
 
     @Override
         public List<BackofficeResponse> getAllBackOfficeLoans(int page, int size) {

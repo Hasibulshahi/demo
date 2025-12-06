@@ -16,14 +16,17 @@ import java.util.List;
 @Service
 public class LoanServiceImpl implements LoanService {
 
-    @Autowired
-    private LoanRepository loanRepository;
+    private final LoanRepository loanRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private LoanMapper loanMapper;
+    private final LoanMapper loanMapper;
+
+    public LoanServiceImpl(LoanRepository loanRepository, UserRepository userRepository, LoanMapper loanMapper) {
+        this.loanRepository = loanRepository;
+        this.userRepository = userRepository;
+        this.loanMapper = loanMapper;
+    }
 
     @Override
     public LoanResponse applyLoan(LoanRequest request) {

@@ -13,11 +13,14 @@ import com.example.demo.generated.model.UserResponse;
 
 @Service
 public class UserServiceImpl implements UserService {
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private UserMapper mapper;
+    private final UserMapper mapper;
+
+    public UserServiceImpl(UserRepository userRepository, UserMapper mapper) {
+        this.userRepository = userRepository;
+        this.mapper = mapper;
+    }
 
     @Override
     public UserResponse createUser(UserRequest request) {

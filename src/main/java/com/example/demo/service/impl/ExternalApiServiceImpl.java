@@ -14,8 +14,11 @@ import java.time.OffsetDateTime;
 @Service
 public class ExternalApiServiceImpl implements ExternalApiService {
 
-    @Autowired
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
+
+    public ExternalApiServiceImpl(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
     @Override
     public ExternalApiResponse callExternalApi(String urlString) {
@@ -29,16 +32,16 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         try {
             // Call the external API
             String responseBody = restTemplate.getForObject(urlString, String.class);
-            
+
             ExternalApiResponse response = new ExternalApiResponse();
             response.setStatusCode(200);
             response.setResponseBody(responseBody);
             response.setUrl(urlString);
             response.setTimestamp(OffsetDateTime.now());
-            
+
             return response;
         } catch (RestClientException e) {
-            throw new RuntimeException("Error calling external API: " + e.getMessage(), e);
+            throw new com.example.demo.exception.ExternalServiceException("Error calling external API: " + e.getMessage(), e);
         }
     }
 }

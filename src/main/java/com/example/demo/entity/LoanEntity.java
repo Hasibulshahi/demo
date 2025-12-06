@@ -26,4 +26,13 @@ public class LoanEntity {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
+
+    // Alias getter/setter to normalize naming without breaking existing mappings/tests
+    public Double getPayableLoanAmount() {
+        return this.payablelLoanAmount;
+    }
+
+    public void setPayableLoanAmount(Double payableLoanAmount) {
+        this.payablelLoanAmount = payableLoanAmount;
+    }
 }

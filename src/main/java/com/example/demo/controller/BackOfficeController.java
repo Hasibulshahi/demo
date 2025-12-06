@@ -18,8 +18,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RestController
 public class BackOfficeController implements BackOfficeOperationApi {
 
-    @Autowired
-    private BackOfficeService backOfficeService;
+    private final BackOfficeService backOfficeService;
+
+    public BackOfficeController(BackOfficeService backOfficeService) {
+        this.backOfficeService = backOfficeService;
+    }
 
     @Override
     public ResponseEntity<List<BackofficeResponse>> getAllBackOfficeLoans(
