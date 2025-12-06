@@ -613,4 +613,228 @@ class LoanServiceImplTest {
         // Verify
         verify(loanRepository, times(1)).save(any(LoanEntity.class));
     }
+
+    @Test
+    @DisplayName("Should search loans by username only")
+    void testSearchLoansByUsernameOnly() {
+        // Arrange
+        String username = "John Doe";
+        String loanType = null;
+        int page = 0;
+        int size = 20;
+        Pageable pageable = PageRequest.of(page, size);
+
+        LoanEntity loan2 = new LoanEntity();
+        loan2.setId(2L);
+        loan2.setUser(userEntity);
+        loan2.setAmount(50000.0);
+        loan2.setLoanType("Auto");
+
+        List<LoanEntity> loanList = Arrays.asList(loanEntity, loan2);
+        Page<LoanEntity> pageResult = new PageImpl<>(loanList, pageable, 2);
+
+        LoanResponse response2 = new LoanResponse();
+        response2.setId(2);
+        response2.setUserId(1L);
+        response2.setAmount(50000.0);
+        response2.setLoanType("Auto");
+
+        List<LoanResponse> responseList = Arrays.asList(loanResponse, response2);
+
+        when(loanRepository.searchLoans(username, loanType, pageable)).thenReturn(pageResult);
+        when(loanMapper.toLoansResponse(loanList)).thenReturn(responseList);
+
+        // Act
+        List<LoanResponse> responses = loanService.searchLoans(username, loanType, page, size);
+
+        // Assert
+        assertNotNull(responses);
+        assertEquals(2, responses.size());
+        assertEquals(1, responses.get(0).getId());
+        assertEquals(2, responses.get(1).getId());
+
+        // Verify
+        verify(loanRepository, times(1)).searchLoans(username, loanType, pageable);
+        verify(loanMapper, times(1)).toLoansResponse(loanList);
+    }
+
+    @Test
+    @DisplayName("Should search loans by loan type only")
+    void testSearchLoansByLoanTypeOnly() {
+        // Arrange
+        String username = null;
+        String loanType = "Home Loan";
+        int page = 0;
+        int size = 20;
+        Pageable pageable = PageRequest.of(page, size);
+
+        List<LoanEntity> loanList = Arrays.asList(loanEntity);
+        Page<LoanEntity> pageResult = new PageImpl<>(loanList, pageable, 1);
+
+        List<LoanResponse> responseList = Arrays.asList(loanResponse);
+
+        when(loanRepository.searchLoans(username, loanType, pageable)).thenReturn(pageResult);
+        when(loanMapper.toLoansResponse(loanList)).thenReturn(responseList);
+
+        // Act
+        List<LoanResponse> responses = loanService.searchLoans(username, loanType, page, size);
+
+        // Assert
+        assertNotNull(responses);
+        assertEquals(1, responses.size());
+        assertEquals("Personal", responses.get(0).getLoanType());
+
+        // Verify
+        verify(loanRepository, times(1)).searchLoans(username, loanType, pageable);
+    }
+
+    @Test
+    @DisplayName("Should search loans by both username and loan type")
+    void testSearchLoansByUsernameAndLoanType() {
+        // Arrange
+        String username = "John Doe";
+        String loanType = "Personal";
+        int page = 0;
+        int size = 20;
+        Pageable pageable = PageRequest.of(page, size);
+
+        List<LoanEntity> loanList = Arrays.asList(loanEntity);
+        Page<LoanEntity> pageResult = new PageImpl<>(loanList, pageable, 1);
+
+        List<LoanResponse> responseList = Arrays.asList(loanResponse);
+
+        when(loanRepository.searchLoans(username, loanType, pageable)).thenReturn(pageResult);
+        when(loanMapper.toLoansResponse(loanList)).thenReturn(responseList);
+
+        // Act
+        List<LoanResponse> responses = loanService.searchLoans(username, loanType, page, size);
+
+        // Assert
+        assertNotNull(responses);
+        assertEquals(1, responses.size());
+        assertEquals(1, responses.get(0).getId());
+        assertEquals("Personal", responses.get(0).getLoanType());
+
+        // Verify
+        verify(loanRepository, times(1)).searchLoans(username, loanType, pageable);
+    }
+
+    @Test
+    @DisplayName("Should return empty list when no loans match search criteria")
+    void testSearchLoansNoMatches() {
+        // Arrange
+        String username = "Unknown User";
+        String loanType = "Business Loan";
+        int page = 0;
+        int size = 20;
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<LoanEntity> emptyPage = new PageImpl<>(Arrays.asList(), pageable, 0);
+
+        when(loanRepository.searchLoans(username, loanType, pageable)).thenReturn(emptyPage);
+        when(loanMapper.toLoansResponse(Arrays.asList())).thenReturn(Arrays.asList());
+
+        // Act
+        List<LoanResponse> responses = loanService.searchLoans(username, loanType, page, size);
+
+        // Assert
+        assertNotNull(responses);
+        assertTrue(responses.isEmpty());
+
+        // Verify
+        verify(loanRepository, times(1)).searchLoans(username, loanType, pageable);
+    }
+
+    @Test
+    @DisplayName("Should search loans with pagination")
+    void testSearchLoansWithPagination() {
+        // Arrange
+        String username = "John Doe";
+        String loanType = null;
+        int page = 1;
+        int size = 10;
+        Pageable pageable = PageRequest.of(page, size);
+
+        List<LoanEntity> loanList = Arrays.asList(loanEntity);
+        Page<LoanEntity> pageResult = new PageImpl<>(loanList, pageable, 1);
+
+        List<LoanResponse> responseList = Arrays.asList(loanResponse);
+
+        when(loanRepository.searchLoans(username, loanType, pageable)).thenReturn(pageResult);
+        when(loanMapper.toLoansResponse(loanList)).thenReturn(responseList);
+
+        // Act
+        List<LoanResponse> responses = loanService.searchLoans(username, loanType, page, size);
+
+        // Assert
+        assertEquals(1, responses.size());
+
+        // Verify
+        verify(loanRepository, times(1)).searchLoans(eq(username), eq(loanType), any(Pageable.class));
+    }
+
+    @Test
+    @DisplayName("Should handle null username and loan type in search")
+    void testSearchLoansWithBothNull() {
+        // Arrange
+        String username = null;
+        String loanType = null;
+        int page = 0;
+        int size = 20;
+        Pageable pageable = PageRequest.of(page, size);
+
+        LoanEntity loan2 = new LoanEntity();
+        loan2.setId(2L);
+        loan2.setAmount(50000.0);
+
+        List<LoanEntity> loanList = Arrays.asList(loanEntity, loan2);
+        Page<LoanEntity> pageResult = new PageImpl<>(loanList, pageable, 2);
+
+        LoanResponse response2 = new LoanResponse();
+        response2.setId(2);
+        response2.setAmount(50000.0);
+
+        List<LoanResponse> responseList = Arrays.asList(loanResponse, response2);
+
+        when(loanRepository.searchLoans(username, loanType, pageable)).thenReturn(pageResult);
+        when(loanMapper.toLoansResponse(loanList)).thenReturn(responseList);
+
+        // Act
+        List<LoanResponse> responses = loanService.searchLoans(username, loanType, page, size);
+
+        // Assert
+        assertNotNull(responses);
+        assertEquals(2, responses.size());
+
+        // Verify
+        verify(loanRepository, times(1)).searchLoans(null, null, pageable);
+    }
+
+    @Test
+    @DisplayName("Should search loans with negative pagination values corrected")
+    void testSearchLoansNegativePagination() {
+        // Arrange
+        String username = "John Doe";
+        String loanType = "Personal";
+        int negativePage = -5;
+        int negativeSize = -10;
+        
+        // Service should convert negative values to positive
+        Pageable pageable = PageRequest.of(Math.max(0, negativePage), Math.max(1, negativeSize));
+        Page<LoanEntity> pageResult = new PageImpl<>(Arrays.asList(loanEntity), pageable, 1);
+
+        List<LoanResponse> responseList = Arrays.asList(loanResponse);
+
+        when(loanRepository.searchLoans(username, loanType, pageable)).thenReturn(pageResult);
+        when(loanMapper.toLoansResponse(any(List.class))).thenReturn(responseList);
+
+        // Act
+        List<LoanResponse> responses = loanService.searchLoans(username, loanType, negativePage, negativeSize);
+
+        // Assert
+        assertEquals(1, responses.size());
+
+        // Verify that PageRequest was created with page=0 and size=1
+        verify(loanRepository, times(1)).searchLoans(eq(username), eq(loanType), any(Pageable.class));
+    }
 }

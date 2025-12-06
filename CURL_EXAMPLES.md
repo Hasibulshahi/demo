@@ -81,6 +81,28 @@ curl -sS -X POST http://localhost:8080/api/v1/loans/apply \
 curl -sS "http://localhost:8080/api/v1/loans/user/1?page=0&size=20"
 ```
 
+3) Search loans by username and/or loan type with pagination (GET /api/v1/loans/search)
+
+Search by username only:
+```bash
+curl -sS "http://localhost:8080/api/v1/loans/search?username=John%20Doe&page=0&size=20"
+```
+
+Search by loan type only:
+```bash
+curl -sS "http://localhost:8080/api/v1/loans/search?loanType=Home%20Loan&page=0&size=20"
+```
+
+Search by both username and loan type:
+```bash
+curl -sS "http://localhost:8080/api/v1/loans/search?username=John%20Doe&loanType=Home%20Loan&page=0&size=20"
+```
+
+Search with custom pagination (page and size):
+```bash
+curl -sS "http://localhost:8080/api/v1/loans/search?username=John%20Doe&page=1&size=10"
+```
+
 ---
 
 ## BackOffice

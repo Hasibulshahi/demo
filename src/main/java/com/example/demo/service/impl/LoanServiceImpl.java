@@ -59,6 +59,13 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
+    public List<LoanResponse> searchLoans(String username, String loanType, int page, int size) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(Math.max(0, page), Math.max(1, size));
+        org.springframework.data.domain.Page<LoanEntity> pageResult = loanRepository.searchLoans(username, loanType, pageable);
+        return loanMapper.toLoansResponse(pageResult.getContent());
+    }
+
+    @Override
     public int updateLoanApproval(Long loanId, Long userId, String loanApproval) {
         return loanRepository.updateLoanApproval(loanId, userId, loanApproval);
     }

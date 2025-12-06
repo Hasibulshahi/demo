@@ -42,6 +42,17 @@ public interface LoanService {
     java.util.List<com.example.demo.generated.model.LoanResponse> getLoansByUserId(Long userId, int page, int size);
 
     /**
+     * Search loans by username and/or loan type with pagination.
+     *
+     * @param username Username to filter by (optional, can be null)
+     * @param loanType Loan type to filter by (optional, can be null)
+     * @param page zero-based page index
+     * @param size page size
+     * @return List of LoanResponse matching the search criteria
+     */
+    java.util.List<com.example.demo.generated.model.LoanResponse> searchLoans(String username, String loanType, int page, int size);
+
+    /**
      * Update loan approval status for a given loan and user.
      *
      * @param loanId ID of the loan

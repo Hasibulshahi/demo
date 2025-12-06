@@ -13,6 +13,11 @@ public interface LoanRepository extends JpaRepository<LoanEntity, Long> {
     LoanEntity findLoanById(Long id);
     Page<LoanEntity> findAllByUser_Id(Long userId, Pageable pageable);
     
+    @Query("SELECT l FROM LoanEntity l WHERE " +
+           "(:username IS NULL OR l.user.name LIKE %:username%) AND " +
+           "(:loanType IS NULL OR l.loanType LIKE %:loanType%)")
+    Page<LoanEntity> searchLoans(@Param("username") String username, @Param("loanType") String loanType, Pageable pageable);
+    
     @Modifying
     @Transactional
     @Query("UPDATE LoanEntity l SET l.loanApproval = :loanApproval WHERE l.id = :loanId AND l.user.id = :userId")
